@@ -5,8 +5,8 @@ COPY pyproject.toml README.md LICENSE ./
 COPY cases ./cases
 COPY evalgate ./evalgate
 
-RUN pip install --no-cache-dir ".[mcp]" && \
-    python3 -m evalgate run --target fixture --suite cases/suite.json --baseline cases/baseline.json --out reports/latest.md || true
+RUN pip install --no-cache-dir ".[mcp]"
+RUN python3 -m evalgate run --target fixture --suite cases/suite.json --baseline cases/baseline.json --out reports/latest.md
 
 ENV PORT=8080
 EXPOSE 8080

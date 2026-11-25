@@ -116,11 +116,11 @@ def get_flaky_cases(
     return sorted(flaky, key=lambda item: item["flips"], reverse=True)
 
 
-def create_mcp_server() -> Any:
+def create_mcp_server(host: str = "0.0.0.0", port: int = 8080) -> Any:
     """Create and configure the FastMCP server (requires optional [mcp] extra)."""
     from mcp.server.fastmcp import FastMCP
 
-    mcp = FastMCP("evalgate")
+    mcp = FastMCP("evalgate", host=host, port=port)
 
     @mcp.tool(name="list_eval_runs")
     def _list_eval_runs() -> list[dict[str, Any]]:
@@ -151,9 +151,7 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8080")))
     args = parser.parse_args()
 
-    mcp = create_mcp_server()
-    mcp.settings.host = args.host
-    mcp.settings.port = args.port
+    mcp = create_mcp_server(host=args.host, port=args.port)
     mcp.run(transport="streamable-http")
 
 

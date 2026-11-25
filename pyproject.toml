@@ -20,3 +20,6 @@ mcp = [
 [project.scripts]
 evalgate = "evalgate.runner:main"
 evalgate-mcp = "evalgate.mcp_server:main"
+
+[tool.setuptools.packages.find]
+include = ["evalgate*"]
