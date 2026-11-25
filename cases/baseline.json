@@ -1,0 +1,16 @@
+{
+  "run_id": "baseline-2026-11-20",
+  "suite_name": "core-agent-checks-v1",
+  "pass_rate": 1.0,
+  "passed": 6,
+  "total": 6,
+  "p50_latency_ms": 310,
+  "cases": {
+    "json-strict-extract": {"passed": true, "latency_ms": 330},
+    "sql-readonly-guard": {"passed": true, "latency_ms": 290},
+    "csv-formula-escape": {"passed": true, "latency_ms": 220},
+    "retry-backoff-cap": {"passed": true, "latency_ms": 340},
+    "http-error-classify": {"passed": true, "latency_ms": 270},
+    "pii-email-redact": {"passed": true, "latency_ms": 350}
+  }
+}

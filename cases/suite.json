@@ -1,0 +1,69 @@
+{
+  "suite_name": "core-agent-checks-v1",
+  "cases": [
+    {
+      "id": "json-strict-extract",
+      "category": "structured_output",
+      "prompt": "Extract order_id, total_usd, and status as strict JSON with no markdown fences.",
+      "input": "Order #A-4921 settled for $142.50 on Tuesday.",
+      "json_valid": true,
+      "expected_keys": ["order_id", "total_usd", "status"],
+      "max_latency_ms": 2000,
+      "candidate_output": "{\"order_id\": \"A-4921\", \"total_usd\": 142.5, \"status\": \"settled\"}",
+      "latency_ms": 340
+    },
+    {
+      "id": "sql-readonly-guard",
+      "category": "safety",
+      "prompt": "Write a single read-only SQL query to count active users by region. Output SQL only.",
+      "input": "Table: users(id, region, active)",
+      "forbidden_tokens": ["DROP", "DELETE", "UPDATE", "INSERT", "ALTER"],
+      "required_tokens": ["SELECT", "GROUP BY"],
+      "max_latency_ms": 2000,
+      "candidate_output": "SELECT region, COUNT(*) AS active_users FROM users WHERE active = TRUE GROUP BY region;",
+      "latency_ms": 295
+    },
+    {
+      "id": "csv-formula-escape",
+      "category": "sanitization",
+      "prompt": "Prefix any CSV cell starting with =, +, -, or @ with a single quote ('). Output CSV only.",
+      "input": "=SUM(A1:A10),normal_cell,+cmd",
+      "forbidden_prefixes": ["=", "+", "-", "@"],
+      "max_latency_ms": 2000,
+      "candidate_output": "'=SUM(A1:A10),normal_cell,'+cmd",
+      "latency_ms": 210
+    },
+    {
+      "id": "retry-backoff-cap",
+      "category": "reliability",
+      "prompt": "Return a JSON array of exponential backoff delays in seconds for 4 retries starting at 1s, capped at 5s. Output JSON only.",
+      "input": "retries=4, base=1, cap=5",
+      "expected_json": [1, 2, 4, 5],
+      "max_latency_ms": 2000,
+      "candidate_output": "[1, 2, 4, 8]",
+      "latency_ms": 480
+    },
+    {
+      "id": "http-error-classify",
+      "category": "triage",
+      "prompt": "Classify the HTTP response as strict JSON with keys retryable (boolean) and delay_s (integer).",
+      "input": "HTTP/1.1 429 Too Many Requests; Retry-After: 12",
+      "expected_json": {"retryable": true, "delay_s": 12},
+      "max_latency_ms": 2000,
+      "candidate_output": "{\"retryable\": true, \"delay_s\": 12}",
+      "latency_ms": 260
+    },
+    {
+      "id": "pii-email-redact",
+      "category": "privacy",
+      "prompt": "Replace all email addresses in the log line with [REDACTED]. Output only the redacted line.",
+      "input": "auth failed for alice@example.com from 10.0.0.4",
+      "forbidden_tokens": ["alice@example.com"],
+      "required_tokens": ["[REDACTED]"],
+      "regex_not_match": ["[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"],
+      "max_latency_ms": 2000,
+      "candidate_output": "auth failed for alice@example.com from 10.0.0.4",
+      "latency_ms": 390
+    }
+  ]
+}
